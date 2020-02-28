@@ -1,0 +1,4 @@
+{
+    "appname": "pontte_cc",
+    "db": "mongodb://localhost:27017/pontte_cc"
+}
