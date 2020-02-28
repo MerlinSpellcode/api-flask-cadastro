@@ -38,29 +38,24 @@ def index():
 @app.route('/contrato', methods=['POST'])
 def contrato():
     # Checando se os campos obrigatórios foram recebidos.
-    print("asdijasidas")
     if ('nome' 
             and 'cpf' 
             and 'email'
             and 'valor_do_emprestimo'
             in request.form):
-        print("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@")
         # Verificando se o cadastro já existe
         if mongo.db.contratos.find_one({"_id.cpf": request.form['cpf']}):
-            print("IF    @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@")
             cadastro = mongo.db.contratos.find_one({"_id.cpf": request.form['cpf']})
             return {"estado_cadastral": cadastro["estado_cadastral"],
                     "id_cadastro": str(cadastro["_id"]["id"])}
 
         # Se o cadastro não existir, ele irá criar um novo
         else:  
-            print("ELSE    @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@")
             # Preparando dicionário de campos adicionais
             dados_adicionais = {"renda": request.form['renda'] if 'renda' in request.form else "",
                                 "nascimento": request.form['nascimento'] if 'nascimento' in request.form else "",
                                 "estado_civil": request.form['estado_civil'] if 'estado_civil' in request.form else "",
                                 "endereco": request.form['endereco'] if 'endereco' in request.form else ""}
-            print("PASSA AQUI    @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@")
             # Inserido no banco
             contrato_inserido = mongo.db.contratos.insert_one({"_id": {"id": ObjectId(),'cpf': request.form['cpf']},
                                                 "nome": request.form['nome'],
@@ -91,13 +86,11 @@ def upload(id_contrato):
                 imovel_image_name = ""
                 try:
                     # Inserindo a foto do CPF ou CNH no banco
-                    print("1    #######################")
                     cpf_image = request.files['cpf']
                     # Aqui vou pegar a extensão da imagem, para poder criar um nome único para ela.
                     cpf_image_type = cpf_image.filename[-5:] if ".jpeg" in cpf_image.filename else cpf_image.filename[-4:]
                     cpf_image_name = id_contrato + "__cpf" + cpf_image_type
                     mongo.save_file(cpf_image_name, cpf_image)
-                    print("2    #######################")
 
                     # Inserindo a foto do Comprovação de Renda no banco
                     if 'renda' in request.files:
